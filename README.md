@@ -152,6 +152,3 @@ See `docs/sql_invocations.md` for ready-to-run examples calling procedures/funct
 - Port in use: If port 5000 is busy, set `FLASK_RUN_PORT` or edit `app.py` to run on a different port.
 - Schema changes: If you tweak the schema, re-run `movie_review_system_complete.sql` or apply targeted DDL/DDL+data updates.
 
-## License
-
-Project is provided as-is for educational purposes. Add a license file if needed.
