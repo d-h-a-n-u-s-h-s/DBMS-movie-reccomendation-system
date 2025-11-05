@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Movie - {{ movie.Title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-edit me-2"></i>Edit Movie: {{ movie.Title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               value="{{ movie.Title }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4">{{ movie.Description or '' }}</textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="year" class="form-label">Year *</label>
+                                <input type="number" class="form-control" id="year" name="year" 
+                                       min="1888" max="2030" value="{{ movie.Year }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="length" class="form-label">Length (minutes)</label>
+                                <input type="number" class="form-control" id="length" name="length" 
+                                       min="1" max="600" value="{{ movie.Length or '' }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="age_rating" class="form-label">Age Rating</label>
+                        <select class="form-select" id="age_rating" name="age_rating">
+                            <option value="">Select Rating</option>
+                            <option value="G" {{ 'selected' if movie.Age_Rating == 'G' }}>G - General Audiences</option>
+                            <option value="PG" {{ 'selected' if movie.Age_Rating == 'PG' }}>PG - Parental Guidance</option>
+                            <option value="PG-13" {{ 'selected' if movie.Age_Rating == 'PG-13' }}>PG-13 - Parents Strongly Cautioned</option>
+                            <option value="R" {{ 'selected' if movie.Age_Rating == 'R' }}>R - Restricted</option>
+                            <option value="NC-17" {{ 'selected' if movie.Age_Rating == 'NC-17' }}>NC-17 - Adults Only</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="genres" class="form-label">Genres</label>
+                        <div class="row">
+                            {% for genre in genres %}
+                            <div class="col-md-4 col-lg-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" 
+                                           id="genre_{{ genre.Genre_ID }}" 
+                                           name="genres" 
+                                           value="{{ genre.Genre_ID }}"
+                                           {{ 'checked' if genre.Genre_ID in movie_genres|map(attribute='Genre_ID')|list }}>
+                                    <label class="form-check-label" for="genre_{{ genre.Genre_ID }}">
+                                        {{ genre.Name }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="celebrities" class="form-label">Celebrities</label>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control mb-2" id="celebrity-search" 
+                                       placeholder="Search celebrities..." onkeyup="filterCelebrities()">
+                            </div>
+                        </div>
+                        <div class="row" id="celebrity-list" style="max-height: 200px; overflow-y: auto;">
+                            {% for celebrity in celebrities %}
+                            <div class="col-md-6 col-lg-4 celebrity-item" data-name="{{ celebrity.Name|lower }}">
+                                <div class="card mb-2">
+                                    <div class="card-body p-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input celebrity-checkbox" type="checkbox" 
+                                                   id="celebrity_{{ celebrity.Celebrity_ID }}" 
+                                                   value="{{ celebrity.Celebrity_ID }}"
+                                                   {{ 'checked' if celebrity.Celebrity_ID in movie_celebrities|map(attribute='Celebrity_ID')|list }}>
+                                            <label class="form-check-label" for="celebrity_{{ celebrity.Celebrity_ID }}">
+                                                <strong>{{ celebrity.Name }}</strong>
+                                                {% if celebrity.Birth_Year %}
+                                                <br><small class="text-muted">Born: {{ celebrity.Birth_Year }}</small>
+                                                {% endif %}
+                                                {% if celebrity.Nationality %}
+                                                <br><small class="text-muted">{{ celebrity.Nationality }}</small>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                        <div class="mt-1">
+                                            <select class="form-select form-select-sm celebrity-role" 
+                                                    {{ 'style="display: block;"' if celebrity.Celebrity_ID in movie_celebrities|map(attribute='Celebrity_ID')|list else 'style="display: none;"' }}>
+                                                {% for movie_celebrity in movie_celebrities %}
+                                                    {% if movie_celebrity.Celebrity_ID == celebrity.Celebrity_ID %}
+                                                        <option value="{{ movie_celebrity.Role }}" selected>{{ movie_celebrity.Role }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <option value="Actor">Actor</option>
+                                                <option value="Actress">Actress</option>
+                                                <option value="Director">Director</option>
+                                                <option value="Producer">Producer</option>
+                                                <option value="Writer">Writer</option>
+                                                <option value="Composer">Composer</option>
+                                                <option value="Cinematographer">Cinematographer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="celebrity_data" name="celebrity_data">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="production_companies" class="form-label">Production Companies</label>
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" class="form-control mb-2" id="production-search" 
+                                       placeholder="Search production companies..." onkeyup="filterProductions()">
+                            </div>
+                        </div>
+                        <div class="row" id="production-list" style="max-height: 200px; overflow-y: auto;">
+                            {% for company in production_companies %}
+                            <div class="col-md-6 col-lg-4 production-item" data-name="{{ company.Name|lower }}">
+                                <div class="card mb-2">
+                                    <div class="card-body p-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input production-checkbox" type="checkbox" 
+                                                   id="production_{{ company.Company_ID }}" 
+                                                   value="{{ company.Company_ID }}"
+                                                   {{ 'checked' if company.Company_ID in movie_productions|map(attribute='Company_ID')|list }}>
+                                            <label class="form-check-label" for="production_{{ company.Company_ID }}">
+                                                <strong>{{ company.Name }}</strong>
+                                                {% if company.Founded_Year %}
+                                                <br><small class="text-muted">Founded: {{ company.Founded_Year }}</small>
+                                                {% endif %}
+                                                {% if company.Country %}
+                                                <br><small class="text-muted">{{ company.Country }}</small>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                        <div class="mt-1">
+                                            <select class="form-select form-select-sm production-role"
+                                                    {{ 'style="display: block;"' if company.Company_ID in movie_productions|map(attribute='Company_ID')|list else 'style="display: none;"' }}>
+                                                {% for movie_production in movie_productions %}
+                                                    {% if movie_production.Company_ID == company.Company_ID %}
+                                                        <option value="{{ movie_production.Role }}" selected>{{ movie_production.Role }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <option value="Producer">Producer</option>
+                                                <option value="Executive Producer">Executive Producer</option>
+                                                <option value="Co-Producer">Co-Producer</option>
+                                                <option value="Associate Producer">Associate Producer</option>
+                                                <option value="Distributor">Distributor</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="production_data" name="production_data">
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('movie_detail', movie_id=movie.Movie_ID) }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Movie
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+const movie_id = {{ movie.Movie_ID }};
+
+// Filter celebrities based on search
+function filterCelebrities() {
+    const searchTerm = document.getElementById('celebrity-search').value.toLowerCase();
+    const celebrityItems = document.querySelectorAll('.celebrity-item');
+    
+    celebrityItems.forEach(item => {
+        const name = item.getAttribute('data-name');
+        if (name.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Filter production companies based on search
+function filterProductions() {
+    const searchTerm = document.getElementById('production-search').value.toLowerCase();
+    const productionItems = document.querySelectorAll('.production-item');
+    
+    productionItems.forEach(item => {
+        const name = item.getAttribute('data-name');
+        if (name.includes(searchTerm)) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// Show/hide role selectors when checkboxes are checked
+document.addEventListener('DOMContentLoaded', function() {
+    // Celebrity checkboxes
+    document.querySelectorAll('.celebrity-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const roleSelect = this.closest('.card').querySelector('.celebrity-role');
+            if (this.checked) {
+                roleSelect.style.display = 'block';
+            } else {
+                roleSelect.style.display = 'none';
+            }
+            updateCelebrityData();
+        });
+    });
+    
+    // Production company checkboxes
+    document.querySelectorAll('.production-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const roleSelect = this.closest('.card').querySelector('.production-role');
+            if (this.checked) {
+                roleSelect.style.display = 'block';
+            } else {
+                roleSelect.style.display = 'none';
+            }
+            updateProductionData();
+        });
+    });
+    
+    // Initialize data
+    updateCelebrityData();
+    updateProductionData();
+});
+
+// Update hidden celebrity data field
+function updateCelebrityData() {
+    const celebrityData = [];
+    document.querySelectorAll('.celebrity-checkbox:checked').forEach(checkbox => {
+        const roleSelect = checkbox.closest('.card').querySelector('.celebrity-role');
+        const celebrityId = checkbox.value;
+        const role = roleSelect.value;
+        celebrityData.push(`(${movie_id}, ${celebrityId}, '${role}')`);
+    });
+    document.getElementById('celebrity_data').value = celebrityData.join(',');
+}
+
+// Update hidden production data field
+function updateProductionData() {
+    const productionData = [];
+    document.querySelectorAll('.production-checkbox:checked').forEach(checkbox => {
+        const roleSelect = checkbox.closest('.card').querySelector('.production-role');
+        const companyId = checkbox.value;
+        const role = roleSelect.value;
+        productionData.push(`(${movie_id}, ${companyId}, '${role}')`);
+    });
+    document.getElementById('production_data').value = productionData.join(',');
+}
+
+// Update data before form submission
+document.querySelector('form').addEventListener('submit', function() {
+    updateCelebrityData();
+    updateProductionData();
+});
+</script>
+{% endblock %}

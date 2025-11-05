@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">
+                <i class="fas fa-film me-3"></i>Welcome to Movie Review System
+            </h1>
+            <p class="lead">Discover, review, and get personalized recommendations for movies and TV shows.</p>
+            {% if not session.user_id %}
+            <a class="btn btn-light btn-lg" href="{{ url_for('register') }}" role="button">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Reviews -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>Recent Reviews
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reviews %}
+                    {% for review in recent_reviews %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-star text-warning me-1"></i>{{ review.Score }}/10 - 
+                                    <a href="{% if review.Movie_ID %}{{ url_for('movie_detail', movie_id=review.Movie_ID) }}{% elif review.Show_ID %}{{ url_for('show_detail', show_id=review.Show_ID) }}{% else %}#{% endif %}" class="text-decoration-none">
+                                        {{ review.Title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-user me-1"></i>{{ review.user_name }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-clock me-1"></i>{{ review.Created_At|date }}
+                                </p>
+                                {% if review.Content %}
+                                <p class="mb-1">{{ review.Content[:150] }}{% if review.Content|length > 150 %}...{% endif %}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    {% if review.movie_title %}
+                                        <i class="fas fa-video me-1"></i>
+                                        <a href="{{ url_for('movie_detail', movie_id=review.Movie_ID) if review.Movie_ID else '#' }}" class="text-decoration-none">
+                                            {{ review.movie_title }}
+                                        </a>
+                                    {% elif review.show_title %}
+                                        <i class="fas fa-tv me-1"></i>
+                                        <a href="{{ url_for('show_detail', show_id=review.Show_ID) if review.Show_ID else '#' }}" class="text-decoration-none">
+                                            {{ review.show_title }}
+                                        </a>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-secondary">No reviews yet. Be the first to add one!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Popular Content -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-fire me-2"></i>Popular Content
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if popular_movies %}
+                    {% for movie in popular_movies %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="mb-0">{{ movie.Title }}</h6>
+                            <small class="text-muted">
+                                {{ movie.Year }}
+                                {% if movie.content_type == 'show' %}
+                                    <span class="badge bg-info ms-1">TV Show</span>
+                                {% else %}
+                                    <span class="badge bg-primary ms-1">Movie</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-warning text-dark">{{ movie.average_rating or 'N/A' }}</span>
+                            <br>
+                            <small class="text-muted">{{ movie.review_count }} reviews</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('analytics_popular') }}" class="btn btn-outline-primary btn-sm">
+                            View All Popular Content
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">No content available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top Rated Movies -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>Top Rated Movies
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_rated_movies %}
+                    {% for movie in top_rated_movies %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="mb-0">{{ movie.Title }}</h6>
+                            <small class="text-muted">{{ movie.Year }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">{{ movie.average_rating }}</span>
+                            <br>
+                            <small class="text-muted">{{ movie.review_count }} reviews</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('analytics_top_rated') }}" class="btn btn-outline-primary btn-sm">
+                            View All Top Rated
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-secondary">No movies available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Quick Stats
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ total_movies or 0 }}</h4>
+                        <small class="text-secondary">Total Movies</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">{{ total_reviews or 0 }}</h4>
+                        <small class="text-secondary">Total Reviews</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h3 class="text-center mb-4">Why Choose Our Platform?</h3>
+    </div>
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                <h5>Smart Recommendations</h5>
+                <p class="text-muted">Get personalized movie and show recommendations based on your preferences and friends' tastes.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-users fa-3x text-success mb-3"></i>
+                <h5>Social Features</h5>
+                <p class="text-muted">Connect with friends, see what they're watching, and discover new content through your network.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 text-center mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                <h5>Detailed Analytics</h5>
+                <p class="text-muted">Explore comprehensive analytics including popular content, top-rated shows, and user activity.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

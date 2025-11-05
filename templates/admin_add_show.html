@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Add TV Show - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-plus-circle me-2"></i>Add New TV Show</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title *</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="year" class="form-label">Year *</label>
+                                <input type="number" class="form-control" id="year" name="year" 
+                                       min="1888" max="2030" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="seasons" class="form-label">Seasons</label>
+                                <input type="number" class="form-control" id="seasons" name="seasons" 
+                                       min="1" max="50">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="episodes" class="form-label">Episodes</label>
+                                <input type="number" class="form-control" id="episodes" name="episodes" 
+                                       min="1" max="1000">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="age_rating" class="form-label">Age Rating</label>
+                        <select class="form-select" id="age_rating" name="age_rating">
+                            <option value="">Select Rating</option>
+                            <option value="TV-G">TV-G - General Audiences</option>
+                            <option value="TV-PG">TV-PG - Parental Guidance</option>
+                            <option value="TV-14">TV-14 - Parents Strongly Cautioned</option>
+                            <option value="TV-MA">TV-MA - Mature Audiences</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin_shows') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Add TV Show
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

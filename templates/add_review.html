@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Add Review - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-star me-2"></i>Add Review</h4>
+            </div>
+            <div class="card-body">
+                {% if movie %}
+                <div class="card bg-dark mb-3">
+                    <div class="card-body p-3">
+                        <h6 class="mb-0 text-white">
+                            <i class="fas fa-video me-2"></i>Reviewing: <strong>{{ movie.Title }}</strong> ({{ movie.Year }})
+                        </h6>
+                    </div>
+                </div>
+                {% elif show %}
+                <div class="card bg-dark mb-3">
+                    <div class="card-body p-3">
+                        <h6 class="mb-0 text-white">
+                            <i class="fas fa-tv me-2"></i>Reviewing: <strong>{{ show.Title }}</strong> ({{ show.Year }})
+                        </h6>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="score" class="form-label">Rating *</label>
+                                <select class="form-select" id="score" name="score" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">1 - Terrible</option>
+                                    <option value="2">2 - Poor</option>
+                                    <option value="3">3 - Bad</option>
+                                    <option value="4">4 - Below Average</option>
+                                    <option value="5">5 - Average</option>
+                                    <option value="6">6 - Above Average</option>
+                                    <option value="7">7 - Good</option>
+                                    <option value="8">8 - Very Good</option>
+                                    <option value="9">9 - Excellent</option>
+                                    <option value="10">10 - Masterpiece</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Review Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Review Content</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" placeholder="Share your thoughts about this content..."></textarea>
+                    </div>
+                    
+                    {% if movie %}
+                    <input type="hidden" name="movie_id" value="{{ movie.Movie_ID }}">
+                    {% elif show %}
+                    <input type="hidden" name="show_id" value="{{ show.Show_ID }}">
+                    {% endif %}
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-star me-2"></i>Submit Review
+                        </button>
+                        <a href="{% if movie %}{{ url_for('movie_detail', movie_id=movie.Movie_ID) }}{% elif show %}{{ url_for('show_detail', show_id=show.Show_ID) }}{% else %}{{ url_for('home') }}{% endif %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

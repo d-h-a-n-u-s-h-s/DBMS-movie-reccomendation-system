@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+        <p class="text-muted">System overview and management</p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ stats.total_users }}</h3>
+                <small class="text-muted">Total Users</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ stats.total_movies }}</h3>
+                <small class="text-muted">Movies</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ stats.total_shows }}</h3>
+                <small class="text-muted">Shows</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ stats.total_reviews }}</h3>
+                <small class="text-muted">Reviews</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-secondary">{{ stats.total_friendships }}</h3>
+                <small class="text-muted">Friendships</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Recent Reviews -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>Recent Reviews
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_reviews %}
+                    {% for review in recent_reviews %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="fas fa-star text-warning me-1"></i>{{ review.score }}/10 - {{ review.title }}
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-user me-1"></i>{{ review.user_name }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-clock me-1"></i>{{ review.created_at|date }}
+                                </p>
+                                {% if review.content %}
+                                <p class="mb-1">{{ review.content[:100] }}{% if review.content|length > 100 %}...{% endif %}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    {% if review.movie_title %}
+                                        <i class="fas fa-video me-1"></i>{{ review.movie_title }}
+                                    {% elif review.show_title %}
+                                        <i class="fas fa-tv me-1"></i>{{ review.show_title }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recent reviews.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Users -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Most Active Users
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if active_users %}
+                    {% for user in active_users %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <h6 class="mb-0">{{ user.name }}</h6>
+                            <small class="text-muted">{{ user.email }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary">{{ user.total_reviews }}</span>
+                            <br>
+                            <small class="text-muted">{{ user.friend_count }} friends</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No active users.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_users') }}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-users me-2"></i>Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_movies') }}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-video me-2"></i>Manage Movies
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_shows') }}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-tv me-2"></i>Manage Shows
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_add_genre') }}" class="btn btn-outline-secondary w-100 mb-2">
+                            <i class="fas fa-plus me-2"></i>Add Genre
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_add_celebrity') }}" class="btn btn-outline-dark w-100 mb-2">
+                            <i class="fas fa-user-plus me-2"></i>Add Celebrity
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_add_production_company') }}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-building me-2"></i>Add Production Company
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('analytics_popular') }}" class="btn btn-outline-warning w-100 mb-2">
+                            <i class="fas fa-chart-bar me-2"></i>View Analytics
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- System Management -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-3">System Management</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <form method="POST" action="{{ url_for('admin_populate_preferences') }}" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-info w-100 mb-2" 
+                                            onclick="return confirm('This will recalculate all user preferences from existing reviews. Continue?')">
+                                        <i class="fas fa-sync me-2"></i>Update Preferences
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('analytics_users') }}" class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="fas fa-user-friends me-2"></i>User Analytics
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('analytics_friendships') }}" class="btn btn-outline-success w-100 mb-2">
+                                    <i class="fas fa-network-wired me-2"></i>Friendship Network
+                                </a>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="{{ url_for('analytics_top_rated') }}" class="btn btn-outline-warning w-100 mb-2">
+                                    <i class="fas fa-star me-2"></i>Top Rated Content
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

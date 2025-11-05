@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Review - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-edit me-2"></i>Edit Review</h4>
+            </div>
+            <div class="card-body">
+                {% if movie %}
+                <div class="alert alert-info">
+                    <i class="fas fa-video me-2"></i>Reviewing: <strong>{{ movie.Title }}</strong> ({{ movie.Year }})
+                </div>
+                {% elif show %}
+                <div class="alert alert-info">
+                    <i class="fas fa-tv me-2"></i>Reviewing: <strong>{{ show.Title }}</strong> ({{ show.Year }})
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="score" class="form-label">Rating *</label>
+                                <select class="form-select" id="score" name="score" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1" {% if review.Score == 1 %}selected{% endif %}>1 - Terrible</option>
+                                    <option value="2" {% if review.Score == 2 %}selected{% endif %}>2 - Poor</option>
+                                    <option value="3" {% if review.Score == 3 %}selected{% endif %}>3 - Bad</option>
+                                    <option value="4" {% if review.Score == 4 %}selected{% endif %}>4 - Below Average</option>
+                                    <option value="5" {% if review.Score == 5 %}selected{% endif %}>5 - Average</option>
+                                    <option value="6" {% if review.Score == 6 %}selected{% endif %}>6 - Above Average</option>
+                                    <option value="7" {% if review.Score == 7 %}selected{% endif %}>7 - Good</option>
+                                    <option value="8" {% if review.Score == 8 %}selected{% endif %}>8 - Very Good</option>
+                                    <option value="9" {% if review.Score == 9 %}selected{% endif %}>9 - Excellent</option>
+                                    <option value="10" {% if review.Score == 10 %}selected{% endif %}>10 - Masterpiece</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Review Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ review.Title }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Review Content</label>
+                        <textarea class="form-control" id="content" name="content" rows="5" placeholder="Share your thoughts about this content...">{{ review.Content or '' }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Review
+                        </button>
+                        <a href="{{ url_for('profile') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash me-2"></i>Delete Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this review? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" action="{{ url_for('delete_review', review_id=review.Review_ID) }}" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function confirmDelete() {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Top Rated Content - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-star me-2"></i>Top Rated Content</h2>
+        <p class="text-muted">Highest rated movies and shows (minimum 3 reviews required)</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Top Rated Movies -->
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-video me-2"></i>Top Rated Movies
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_movies %}
+                    {% for movie in top_movies %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('movie_detail', movie_id=movie.Movie_ID) }}" class="text-decoration-none">
+                                        {{ movie.Title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-calendar me-1"></i>{{ movie.Year }}
+                                </p>
+                            </div>
+                            <div class="text-end ms-3">
+                                <span class="badge bg-success">{{ movie.average_rating }}</span>
+                                <br>
+                                <small class="text-muted">{{ movie.review_count }} reviews</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-video fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">No top rated movies</h5>
+                        <p class="text-muted">Movies need at least 3 reviews to appear here!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Rated Shows -->
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tv me-2"></i>Top Rated Shows
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if top_shows %}
+                    {% for show in top_shows %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('show_detail', show_id=show.Show_ID) }}" class="text-decoration-none">
+                                        {{ show.Title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-calendar me-1"></i>{{ show.Year }}
+                                </p>
+                            </div>
+                            <div class="text-end ms-3">
+                                <span class="badge bg-success">{{ show.average_rating }}</span>
+                                <br>
+                                <small class="text-muted">{{ show.review_count }} reviews</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-tv fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">No top rated shows</h5>
+                        <p class="text-muted">Shows need at least 3 reviews to appear here!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rating Criteria Info -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Rating Criteria</h6>
+            <p class="mb-0">
+                Content must have at least 3 reviews to be considered for top rated lists.
+                <br>
+                <small class="text-muted">This ensures statistical significance and prevents single-review bias.</small>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

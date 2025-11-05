@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Friendship Network - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-user-friends me-2"></i>Friendship Network</h2>
+        <p class="text-muted">Friendship connections with similarity scores</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for friendship in friendships %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title">{{ friendship.user_name }}</h5>
+                    <span class="badge bg-primary">{{ friendship.similarity_score|round(1) }}</span>
+                </div>
+                
+                <div class="text-center mb-3">
+                    <i class="fas fa-heart text-danger"></i>
+                    <i class="fas fa-arrow-left-right text-muted mx-2"></i>
+                    <i class="fas fa-heart text-danger"></i>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title">{{ friendship.friend_name }}</h5>
+                </div>
+                
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h6 class="text-info">{{ friendship.similarity_score|round(1) }}</h6>
+                        <small class="text-muted">Similarity</small>
+                    </div>
+                    <div class="col-6">
+                        <h6 class="text-success">{{ friendship.friendship_date|date }}</h6>
+                        <small class="text-muted">Friends Since</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="fas fa-user-friends fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No friendships yet</h4>
+            <p class="text-muted">Friendships will appear here as users connect!</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Similarity Score Info -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-info">
+            <h6><i class="fas fa-info-circle me-2"></i>Similarity Score</h6>
+            <p class="mb-0">
+                Similarity is calculated based on:
+                <ul class="mb-0">
+                    <li>Number of common reviewed items</li>
+                    <li>Average difference in ratings for common items</li>
+                    <li>Formula: (Common Items × 10) - Average Score Difference</li>
+                </ul>
+                <small class="text-muted">Higher scores indicate more similar tastes between friends.</small>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Users - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-users me-2"></i>User Management</h2>
+        <p class="text-muted">Manage all users in the system</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Verified Entity</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.user_id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if user.role == 'admin' else 'warning' if user.role == 'verified_user' else 'secondary' }}">
+                                        {{ user.role.replace('_', ' ').title() }}
+                                    </span>
+                                </td>
+                                <td>{{ user.age or 'N/A' }}</td>
+                                <td>{{ user.gender or 'N/A' }}</td>
+                                <td>
+                                    {% if user.verified_entity_type %}
+                                        {{ user.verified_entity_type.title() }} #{{ user.verified_entity_id }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.created_at|date }}</td>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="editUser({{ user.user_id }})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteUser({{ user.user_id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4">
+                                    <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No users found</h5>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function editUser(userId) {
+    // TODO: Implement user editing functionality
+    alert('User editing feature coming soon!');
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        // TODO: Implement user deletion functionality
+        alert('User deletion feature coming soon!');
+    }
+}
+</script>
+{% endblock %}

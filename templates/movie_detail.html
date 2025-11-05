@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Movie Info -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h2>{{ movie.Title }}</h2>
+                        <p class="text-muted mb-2">
+                            <i class="fas fa-calendar me-1"></i>{{ movie.Year }}
+                            {% if movie.Length %}
+                            <span class="mx-2">•</span>
+                            <i class="fas fa-clock me-1"></i>{{ movie.Length }} minutes
+                            {% endif %}
+                            {% if movie.Age_Rating %}
+                            <span class="mx-2">•</span>
+                            <span class="badge bg-secondary">{{ movie.Age_Rating }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        {% if movie.avg_rating %}
+                        <div class="display-6 text-warning">
+                            <i class="fas fa-star"></i> {{ movie.avg_rating }}
+                        </div>
+                        <small class="text-muted">{{ movie.review_count }} reviews</small>
+                        {% else %}
+                        <div class="text-muted">No reviews yet</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if movie.Description %}
+                <p class="card-text">{{ movie.Description }}</p>
+                {% endif %}
+                
+                <!-- Genres -->
+                {% if genres %}
+                <div class="mb-3">
+                    <h6>Genres:</h6>
+                    {% for genre in genres %}
+                    <span class="badge bg-primary me-1">{{ genre.Name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Celebrities -->
+                {% if celebrities %}
+                <div class="mb-3">
+                    <h6>Cast & Crew:</h6>
+                    <div class="row">
+                        {% for celebrity in celebrities %}
+                        <div class="col-md-6 mb-2">
+                            <strong>{{ celebrity.Name }}</strong>
+                            <small class="text-muted">({{ celebrity.Role }})</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <div class="d-flex gap-2">
+                    {% if session.user_id %}
+                    <a href="{{ url_for('add_review', movie_id=movie.Movie_ID) }}" class="btn btn-primary">
+                        <i class="fas fa-star me-2"></i>Add Review
+                    </a>
+                    {% endif %}
+                    {% if can_edit %}
+                    <button class="btn btn-outline-secondary" onclick="editMovie()">
+                        <i class="fas fa-edit me-2"></i>Edit Movie
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reviews -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-comments me-2"></i>Reviews ({{ reviews|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">
+                                    <i class="fas fa-star text-warning me-1"></i>{{ review.Score }}/10 - {{ review.Title }}
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-user me-1"></i>{{ review.user_name }}
+                                    <span class="mx-2">•</span>
+                                    <i class="fas fa-clock me-1"></i>{{ review.Created_At|date }}
+                                </p>
+                                {% if review.Content %}
+                                <p class="mb-0">{{ review.Content }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-comment-slash fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">No reviews yet</h5>
+                        <p class="text-muted">Be the first to review this movie!</p>
+                        {% if session.user_id %}
+                        <a href="{{ url_for('add_review', movie_id=movie.Movie_ID) }}" class="btn btn-primary">
+                            <i class="fas fa-star me-2"></i>Add Review
+                        </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Rating Stats -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Rating Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="rating-stats">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Similar Movies -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-film me-2"></i>Similar Movies
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Similar movies feature coming soon!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load rating statistics
+document.addEventListener('DOMContentLoaded', function() {
+    fetch(`/api/movie/{{ movie.Movie_ID }}/rating`)
+        .then(response => response.json())
+        .then(data => {
+            const statsDiv = document.getElementById('rating-stats');
+            if (data.error) {
+                statsDiv.innerHTML = '<p class="text-muted">No rating data available</p>';
+            } else {
+                statsDiv.innerHTML = `
+                    <div class="text-center mb-3">
+                        <h3 class="text-warning">${data.average_rating || 'N/A'}</h3>
+                        <small class="text-muted">Average Rating</small>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h5>${data.review_count || 0}</h5>
+                            <small class="text-muted">Reviews</small>
+                        </div>
+                        <div class="col-6">
+                            <h5>${data.rating_std_dev || 'N/A'}</h5>
+                            <small class="text-muted">Std Dev</small>
+                        </div>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading rating stats:', error);
+            document.getElementById('rating-stats').innerHTML = '<p class="text-muted">Error loading statistics</p>';
+        });
+});
+
+function editMovie() {
+    // Redirect to admin edit page
+    window.location.href = "{{ url_for('edit_movie', movie_id=movie.Movie_ID) }}";
+}
+</script>
+{% endblock %}

@@ -1,0 +1,445 @@
+/* Custom CSS for Movie Review System */
+
+/* Global Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border-radius: 15px;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group-text {
+    border-radius: 8px 0 0 8px;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Alerts */
+.alert {
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    color: #856404;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    color: #0c5460;
+}
+
+/* Tables */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Progress Bars */
+.progress {
+    border-radius: 10px;
+    height: 8px;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Custom Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Rating Stars */
+.rating-stars {
+    color: #ffc107;
+}
+
+/* Popularity Score */
+.popularity-score {
+    font-weight: bold;
+    color: #fd7e14;
+}
+
+/* Similarity Score */
+.similarity-score {
+    font-weight: bold;
+    color: #20c997;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .jumbotron {
+        padding: 2rem 1rem;
+    }
+    
+    .jumbotron h1 {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Loading Spinner */
+.spinner-border {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 15px 15px 0 0;
+    background-color: #f8f9fa;
+}
+
+.modal-footer {
+    border-top: 1px solid #e9ecef;
+    border-radius: 0 0 15px 15px;
+    background-color: #f8f9fa;
+}
+
+/* Ensure modal text is always visible */
+.modal-title {
+    color: #212529 !important;
+    font-weight: 600;
+}
+
+.modal-body {
+    color: #212529 !important;
+}
+
+.modal-body .form-label {
+    color: #212529 !important;
+    font-weight: 500;
+}
+
+/* Better input field styling */
+.modal .form-control,
+.modal .form-select {
+    border: 2px solid #ced4da;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Dropdown Styles */
+.dropdown-menu {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-custom {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.border-radius-custom {
+    border-radius: 15px;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a1a;
+        color: #e9ecef;
+    }
+    
+    .card {
+        background-color: #2d2d2d;
+        color: #e9ecef;
+    }
+    
+    .card-header {
+        background-color: #2d2d2d;
+        border-bottom-color: #495057;
+        color: #e9ecef !important;
+    }
+    
+    .card-body {
+        color: #e9ecef !important;
+    }
+    
+    .card-text {
+        color: #e9ecef !important;
+    }
+    
+    .text-muted {
+        color: #adb5bd !important;
+    }
+    
+    .text-secondary {
+        color: #adb5bd !important;
+    }
+    
+    .table {
+        color: #e9ecef;
+    }
+    
+    .table thead th {
+        background-color: #2d2d2d;
+        border-bottom-color: #495057;
+        color: #e9ecef !important;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #2d2d2d;
+    }
+    
+    /* Fix specific text visibility issues */
+    .card .text-muted,
+    .card .text-secondary,
+    .card small,
+    .card .small {
+        color: #adb5bd !important;
+    }
+    
+    /* Ensure all text in cards is visible */
+    .card * {
+        color: inherit;
+    }
+    
+    .card .text-dark {
+        color: #e9ecef !important;
+    }
+    
+    /* Fix input field text visibility for dark mode */
+    .form-control,
+    .form-select,
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    textarea {
+        background-color: #2d2d2d !important;
+        color: #e9ecef !important;
+        border-color: #495057 !important;
+    }
+    
+    .form-control:focus,
+    .form-select:focus,
+    input:focus,
+    textarea:focus {
+        background-color: #2d2d2d !important;
+        color: #e9ecef !important;
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    }
+    
+    .form-control::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+        color: #adb5bd !important;
+    }
+    
+    /* Fix modal input fields for light backgrounds */
+    .modal .form-control,
+    .modal .form-select,
+    .modal input[type="text"],
+    .modal input[type="email"],
+    .modal input[type="password"],
+    .modal input[type="number"],
+    .modal textarea {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        border-color: #ced4da !important;
+    }
+    
+    .modal .form-control:focus,
+    .modal .form-select:focus,
+    .modal input:focus,
+    .modal textarea:focus {
+        background-color: #ffffff !important;
+        color: #212529 !important;
+        border-color: #007bff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    }
+    
+    .modal .form-control::placeholder,
+    .modal input::placeholder,
+    .modal textarea::placeholder {
+        color: #6c757d !important;
+    }
+    
+    /* Ensure modal text is visible */
+    .modal .form-label {
+        color: #212529 !important;
+    }
+    
+    .modal .text-muted {
+        color: #6c757d !important;
+    }
+}

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <!-- User Info -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                </div>
+                <h4>{{ user.Name }}</h4>
+                <p class="text-muted">{{ user.Email }}</p>
+                <span class="badge bg-{{ 'success' if user.Role == 'admin' else 'warning' if user.Role == 'verified_user' else 'secondary' }}">
+                    {{ user.Role.replace('_', ' ').title() }}
+                </span>
+                {% if user.Role == 'admin' %}
+                <div class="mt-3">
+                    <h6 class="text-primary">Admin Tools</h6>
+                    <div class="btn-group-vertical w-100" role="group">
+                        <a href="{{ url_for('admin_add_genre') }}" class="btn btn-outline-primary btn-sm mb-1">
+                            <i class="fas fa-plus me-1"></i>Add Genre
+                        </a>
+                        <a href="{{ url_for('admin_add_celebrity') }}" class="btn btn-outline-success btn-sm mb-1">
+                            <i class="fas fa-user-plus me-1"></i>Add Celebrity
+                        </a>
+                        <a href="{{ url_for('admin_add_production_company') }}" class="btn btn-outline-info btn-sm mb-1">
+                            <i class="fas fa-building me-1"></i>Add Production Company
+                        </a>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-tachometer-alt me-1"></i>Admin Dashboard
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                {% if user.Age %}
+                <p class="mt-2 mb-0">
+                    <i class="fas fa-birthday-cake me-1"></i>{{ user.Age }} years old
+                </p>
+                {% endif %}
+                {% if user.Gender %}
+                <p class="mb-0">
+                    <i class="fas fa-venus-mars me-1"></i>{{ user.Gender }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Statistics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6">
+                        <h4 class="text-primary">{{ user_stats.review_count or 0 }}</h4>
+                        <small class="text-muted">Reviews</small>
+                    </div>
+                    <div class="col-6">
+                        <h4 class="text-success">{{ user_stats.friend_count or 0 }}</h4>
+                        <small class="text-muted">Friends</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <h4 class="text-warning">{{ user_stats.avg_score or 'N/A' }}</h4>
+                    <small class="text-muted">Average Rating Given</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- User Reviews -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-star me-2"></i>My Reviews ({{ user_reviews|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if user_reviews %}
+                    {% for review in user_reviews %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-star text-warning me-1"></i>{{ review.Score }}/10 - 
+                                    <a href="{% if review.Movie_ID %}{{ url_for('movie_detail', movie_id=review.Movie_ID) }}{% elif review.Show_ID %}{{ url_for('show_detail', show_id=review.Show_ID) }}{% else %}#{% endif %}" class="text-decoration-none">
+                                        {{ review.Title }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-clock me-1"></i>{{ review.Created_At|date }}
+                                </p>
+                                {% if review.Content %}
+                                <p class="mb-1">{{ review.Content[:150] }}{% if review.Content|length > 150 %}...{% endif %}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    {% if review.movie_title %}
+                                        <i class="fas fa-video me-1"></i>{{ review.movie_title }}
+                                    {% elif review.show_title %}
+                                        <i class="fas fa-tv me-1"></i>{{ review.show_title }}
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <div class="ms-3">
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('edit_review', review_id=review.Review_ID) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="confirmDelete({{ review.Review_ID }})">
+                                        <i class="fas fa-trash me-1"></i>Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-star fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">No reviews yet</h5>
+                        <p class="text-muted">Start reviewing movies and shows to build your profile!</p>
+                        <a href="{{ url_for('movies') }}" class="btn btn-primary">
+                            <i class="fas fa-video me-2"></i>Browse Movies
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this review? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="POST" id="deleteForm" class="d-inline">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function confirmDelete(reviewId) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const deleteForm = document.getElementById('deleteForm');
+    deleteForm.action = "{{ url_for('delete_review', review_id=0) }}".replace('0', reviewId);
+    modal.show();
+}
+</script>
+{% endblock %}

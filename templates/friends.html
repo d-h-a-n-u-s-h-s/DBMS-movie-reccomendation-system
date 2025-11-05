@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Friends - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-user-friends me-2"></i>My Friends</h2>
+    </div>
+</div>
+
+<form method="get" action="{{ url_for('friends') }}" class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="Search friends by name or email..." />
+    </div>
+    <div class="col-md-6 d-grid d-md-flex">
+        <button type="submit" class="btn btn-outline-primary me-2"><i class="fas fa-search me-1"></i>Search</button>
+        <a href="{{ url_for('friends') }}" class="btn btn-outline-secondary">Reset</a>
+    </div>
+    {% if q %}
+    <div class="col-12 small text-muted">Filtering friends matching "{{ q }}"</div>
+    {% endif %}
+</form>
+
+<div class="row">
+    <!-- Current Friends -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>Friends List ({{ friends|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if friends %}
+                    {% for friend in friends %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('profile') }}?user_id={{ friend.User_ID }}" class="text-decoration-none">
+                                        {{ friend.Name }}
+                                    </a>
+                                </h6>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-envelope me-1"></i>{{ friend.Email }}
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>Friends since {{ friend.friendship_date|date if friend.friendship_date else 'Unknown' }}
+                                </small>
+                            </div>
+                            <form method="POST" action="{{ url_for('remove_friend') }}" class="d-inline">
+                                <input type="hidden" name="friend_id" value="{{ friend.User_ID }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                        onclick="return confirm('Are you sure you want to remove this friend?')">
+                                    <i class="fas fa-user-minus me-1"></i>Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-friends fa-2x text-muted mb-3"></i>
+                        <h5 class="text-muted">No friends yet</h5>
+                        <p class="text-muted">Add friends to see their reviews and get recommendations!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Friends -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i>Add Friends
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_friend') }}">
+                    <div class="mb-3">
+                        <label for="search_user" class="form-label">Search User</label>
+                        <input type="text" class="form-control" id="search_user" placeholder="Type to search users..." autocomplete="off">
+                        <div id="search_results" class="mt-2" style="max-height: 200px; overflow-y: auto; display: none;">
+                            <!-- Search results will be populated here -->
+                        </div>
+                        <input type="hidden" id="friend_id" name="friend_id" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="add_friend_btn" disabled>
+                            <i class="fas fa-user-plus me-2"></i>Add Friend
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search_user');
+    const searchResults = document.getElementById('search_results');
+    const friendIdInput = document.getElementById('friend_id');
+    const addFriendBtn = document.getElementById('add_friend_btn');
+    const allUsers = {{ all_users | tojson }};
+    
+    // Filter out current user and existing friends
+    const currentUserId = {{ session.user_id | tojson }};
+    const existingFriendIds = {{ friends | map(attribute='User_ID') | list | tojson }};
+    
+    const availableUsers = allUsers.filter(user => 
+        user.User_ID !== currentUserId && 
+        !existingFriendIds.includes(user.User_ID)
+    );
+    
+    searchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+        }
+        
+        const filteredUsers = availableUsers.filter(user => 
+            user.Name.toLowerCase().includes(query) || 
+            user.Email.toLowerCase().includes(query)
+        );
+        
+        if (filteredUsers.length === 0) {
+            searchResults.innerHTML = '<div class="text-muted p-2">No users found</div>';
+        } else {
+            searchResults.innerHTML = filteredUsers.map(user => 
+                `<div class="search-result-item p-2 border-bottom cursor-pointer" 
+                     data-user-id="${user.User_ID}" 
+                     data-user-name="${user.Name}" 
+                     data-user-email="${user.Email}"
+                     style="cursor: pointer;"
+                     onmouseover="this.style.backgroundColor='#f8f9fa'"
+                     onmouseout="this.style.backgroundColor='transparent'">
+                    <strong>${user.Name}</strong><br>
+                    <small class="text-muted">${user.Email}</small>
+                </div>`
+            ).join('');
+        }
+        
+        searchResults.style.display = 'block';
+    });
+    
+    // Handle search result selection
+    searchResults.addEventListener('click', function(e) {
+        const resultItem = e.target.closest('.search-result-item');
+        if (resultItem) {
+            const userId = resultItem.dataset.userId;
+            const userName = resultItem.dataset.userName;
+            const userEmail = resultItem.dataset.userEmail;
+            
+            // Update the search input
+            searchInput.value = `${userName} (${userEmail})`;
+            
+            // Set the hidden input
+            friendIdInput.value = userId;
+            
+            // Enable the add friend button
+            addFriendBtn.disabled = false;
+            
+            // Hide search results
+            searchResults.style.display = 'none';
+        }
+    });
+    
+    // Hide search results when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

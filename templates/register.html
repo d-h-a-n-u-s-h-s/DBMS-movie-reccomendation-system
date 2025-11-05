@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Movie Review System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-user-plus me-2"></i>Register</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="age" class="form-label">Age</label>
+                                <input type="number" class="form-control" id="age" name="age" min="13" max="120">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Account Type</label>
+                                <select class="form-select" id="role" name="role">
+                                    <option value="normal_user">Normal User</option>
+                                    <option value="verified_user">Verified User</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Verified User Fields -->
+                    <div id="verified-fields" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="verified_entity_type" class="form-label">Entity Type</label>
+                                    <select class="form-select" id="verified_entity_type" name="verified_entity_type">
+                                        <option value="">Select Type</option>
+                                        <option value="company">Production Company</option>
+                                        <option value="celebrity">Celebrity</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="verified_entity_id" class="form-label">Entity</label>
+                                    <select class="form-select" id="verified_entity_id" name="verified_entity_id">
+                                        <option value="">Select Entity</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">
+                            Login here
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const verifiedFields = document.getElementById('verified-fields');
+    const entityTypeSelect = document.getElementById('verified_entity_type');
+    const entityIdSelect = document.getElementById('verified_entity_id');
+    
+    // Show/hide verified user fields
+    roleSelect.addEventListener('change', function() {
+        if (this.value === 'verified_user') {
+            verifiedFields.style.display = 'block';
+        } else {
+            verifiedFields.style.display = 'none';
+        }
+    });
+    
+    // Populate entity options based on type
+    entityTypeSelect.addEventListener('change', function() {
+        entityIdSelect.innerHTML = '<option value="">Select Entity</option>';
+        
+        if (this.value === 'company') {
+            // Add companies
+            {% for company in companies %}
+            entityIdSelect.innerHTML += '<option value="{{ company.Company_ID }}">{{ company.Name }}</option>';
+            {% endfor %}
+        } else if (this.value === 'celebrity') {
+            // Add celebrities
+            {% for celebrity in celebrities %}
+            entityIdSelect.innerHTML += '<option value="{{ celebrity.Celebrity_ID }}">{{ celebrity.Name }}</option>';
+            {% endfor %}
+        }
+    });
+});
+</script>
+{% endblock %}
